@@ -1,133 +1,65 @@
-# Translate CCP Demo for Amazon Connect
+# Real-Time Multilingual Chat Translation on AWS Connect ☁️🌐
 
-**NOTE: This is a fork of [VoiceFoundry's GitHub repository](https://github.com/voicefoundry-cloud-public/Amazon-Connect-Chat-Translate-Demo) that addresses deployment issues reported by users and provides ability to address any future user concerns.** 
+**A serverless web app that adds real-time, two-way language translation to Amazon Connect chat — a customer chats in their own language while the agent works in English, with automatic language detection.**
 
-This is a sample project that demonstrates using Amazon Translate with Amazon Connect chat to perform real-time translation on chat messages, allowing a user to support dozens of languages. The web app supports multi-chat allow an Amazon Connect Chat user to support multiple languages concurrently. Deployment is using the Amplify UI (No CLI access required) and is using serverless architecture. Deployment takes about 10 minutes. 
+![AWS](https://img.shields.io/badge/AWS-Connect%20%7C%20Translate%20%7C%20Comprehend%20%7C%20Lambda%20%7C%20Amplify-orange) ![Frontend](https://img.shields.io/badge/Frontend-React-blue) ![Type](https://img.shields.io/badge/Type-Fork%20%E2%80%94%20Deployed%20%26%20Configured-yellow)
 
-Read the Amazon blog: https://www.amazon.com/livechattranslate 
+---
 
-### Demo
+> ### ⚠️ Attribution (please read first)
+> **This is a fork of an open-source AWS sample**, originally created by **VoiceFoundry / AWS** (contributors: Daniel Bloy, Bob Strahan, Vishal Nayak, EJ Ferrell, Kishore Dhamodaran — see [`UPSTREAM_README.md`](UPSTREAM_README.md) and [`LICENSE`](LICENSE)). I did **not** write the original application code. My contribution was to **deploy, configure, test, and document** the solution as a Cloud Computing course project, and to write the architecture/operations notes below. The original repo: *Amazon Connect Chat Translate (VoiceFoundry)*. This fork is published for portfolio/learning purposes with full credit to the original authors.
 
-<img src="./artifacts/TranslateDemo.gif" width="75%">
+---
 
-### Architecture
+## 🧭 What the system does
+On an Amazon Connect chat, a customer can type in (for example) French. The agent's web app:
+1. **Detects** the customer's language automatically with **Amazon Comprehend** (or honors a preset `x_lang` contact attribute),
+2. **Translates** the customer's messages to English with **Amazon Translate** so the agent reads them natively,
+3. **Translates the agent's English replies back** into the customer's language before sending.
 
-<img src="./artifacts/Arch.png" width="75%" >
+It supports multiple concurrent chats in different languages and optional **Custom Terminology** for brand/domain-specific phrases.
 
+## 🏗️ Architecture
 
-### Pre-Reqs
+![Architecture](artifacts/Arch.png)
 
-- Existing Amazon Connect Instance ([Create an instance in 3 easy steps](https://docs.aws.amazon.com/connect/latest/adminguide/tutorial1-set-up-your-instance.html))
-- Github account ([Create a free GitHub account](https://github.com/join))
+```
+React app (Amplify-hosted)
+      │  embeds the Amazon Connect Contact Control Panel (CCP) as an iFrame
+      ▼
+Amazon Connect (chat)  ──►  Amazon Comprehend  (language detection)
+      │
+      ▼
+API Gateway  ──►  AWS Lambda  ──►  Amazon Translate  (+ Custom Terminology)
+      ▲
+      └──  serverless, pay-per-use; deployed & hosted via AWS Amplify
+```
 
+**AWS services:** Amazon Connect · Amazon Translate · Amazon Comprehend · AWS Lambda · Amazon API Gateway · AWS Amplify (hosting + CI/CD).
 
-### Deploy
+## 🙋 What I did (my contribution)
+- **Deployed** the serverless stack end-to-end via the **AWS Amplify** console (no-CLI flow), connecting the GitHub repo and provisioning the backend (Lambda functions, predictions for Translate/Comprehend, auth, hosting).
+- **Configured** the Amazon Connect instance: set `REACT_APP_CONNECT_REGION` / instance-URL environment variables, and added the Amplify hosting URL to the Connect **Approved Origins** so the CCP embeds correctly.
+- **Tested** the end-to-end flow with a live customer↔agent chat across languages (e.g., French ↔ English) and verified automatic language detection.
+- **Set up Custom Terminology** (the `connectChatTranslate` CSV) and validated translations.
+- **Authored** the architecture overview, cost analysis, and operations notes (this README) and the course write-up.
 
-- Fork this repository in your Github account  
-- Navigate to [Amplify Console](https://console.aws.amazon.com/amplify/)
-- Get Started with Amplify Hosting
-- Connect to Github
-- Select repository - `amazon-connect-chat-translate`
-- Click on 'Create new role' then `Next: Permissions` > `Next: Tags` > `Next: Review` finally `Create role`
-- Click `Create new environment` for backend
-- Expand `Environment variables` and add the following:
-  - `REACT_APP_CONNECT_REGION` = `AWS Region`  (Example `eu-west-2`)
-  - `REACT_APP_CONNECT_INSTANCE_URL` = `Amazon Connect URL` (Example `https://<<INSTANCE_NAME>>.awsapps.com` or `https://<<INSTANCE_NAME>>.my.connect.aws`)
+## 💸 Cost (serverless, pay-per-use)
+All services fall under the **AWS Free Tier** for light use. Indicative per-message/usage pricing: Amazon Translate ($15 / M chars), API Gateway ($1 / M requests), Lambda ($0.20 / M requests), Amplify build/host (cents). See [`UPSTREAM_README.md`](UPSTREAM_README.md) for the detailed cost table.
 
-[Important, if you copy and paste, ensure there are no trailing whitespaces in the above 2 variable keys, or values. This will cause the web app to not load CCP and a rebuild will be required]
+## ▶️ Deploy it yourself (summary)
+1. Fork the repo and connect it in the **AWS Amplify** console (Amplify Hosting → GitHub).
+2. Add environment variables: `REACT_APP_CONNECT_REGION`, `REACT_APP_CONNECT_INSTANCE_URL` (and set `src/.env`'s `REACT_APP_CCP_URL` to *your* Connect instance — the committed value is a redacted placeholder).
+3. After deploy (~10 min), add the Amplify URL to Amazon Connect **Approved Origins**.
+4. Start a test chat and confirm translation + language detection. Full steps in [`UPSTREAM_README.md`](UPSTREAM_README.md).
 
-<img src="./artifacts/Environment variables.png" width="75%">
+> **Note:** running this requires *your own* Amazon Connect instance and AWS account; it is not a standalone local app.
 
-It will take about 10 minutes for the application to deploy. After successful deployment, add the hosting URL to the Amazon Connect Approved Origin list to allow the web application to embed the CCP as an iFrame.
+## 🔐 Security note
+`src/.env` originally contained a specific Connect instance URL (the original authors' demo instance); it has been **replaced with a placeholder** in this fork. Provide your own instance URL at deploy time.
 
-<img src="./artifacts/Web app deployed.png" width="75%">
+## 🛠️ Tech stack
+`AWS Amplify` · `Amazon Connect` · `Amazon Translate` · `Amazon Comprehend` · `AWS Lambda` · `API Gateway` · `React` · `JavaScript` · `CloudFormation (Amplify-generated)`
 
-* Navigate to the Amazon Connect console (AWS), and select on your Amazon Connect instance name
-* Goto `Approved origins` then `+ Add origin`
-* Enter the Amplify hosting URL, then click `Add`  (Example URL `https://main.d13aaabbbccc.amplifyapp.com`; remove the trailing '/')
-
-### Testing
-
-* Log in to the Amplify web app, create an account, then login to Amazon Connect
-* Start a customer chat (Go to `https://<yourConnectInstanceURL>/connect/test-chat`)
-* Connect through to your agent that's running the new WebApp
-* As the customer type some text in French and you'll see the agent translate app show 'Translate - (fr) French' 
-* As the agent type in English into the translate textbox and press enter. This will be converted to french and sent back to the customer as french
-
-
-### Custom Terminologies
-
-* Custom Terminologies is supported by the web app, and a file is created upon installation which can be updated by following the steps below:
-  * Update the provided Custom Terminologies files
-    * Go to https://console.aws.amazon.com/translate/home?#terminology
-    * Click on the radio button next to `connectChatTranslate`
-    * Download the CSV
-    * Edit the CSV, by adding additional rows. 'en' as the source language and using the columns for the destination language (Feel free to add additional languages in column D onwards)
-    * <img src="./artifacts/connectChatTranslate.png" width="50%">
-    * Update the `connectChatTranslate` custom terminologies with the updated CSV
-  * For more information visit: https://docs.aws.amazon.com/transcribe/latest/dg/how-vocabulary.html
-
-
-### Features
-
-* The web app looks for a contact attribute of `x_lang` if set then the language will be set accordingly. (Supported languages for translation: https://docs.aws.amazon.com/translate/latest/dg/what-is.html)
-* If no `x_lang` contact attribute is set, the FIRST message from the customer will be used to perform language detection using Amazon Comprehend. (Supported languages for detection: https://docs.aws.amazon.com/comprehend/latest/dg/how-languages.html)
-* Agent side is hardcoded to `'en'`
-
-
-### Costs
-
-All the services used are included within the [AWS Free tier](https://aws.amazon.com/free/) offer. However, should you exceed this you will be charged for the services consumed. Please see the [clean up](https://github.com/aws-samples/amazon-connect-chat-translate#clean-up) section to delete all deployed infrastructure.
-
-Outside of free tier you will be charged for the consumption of the services used. For example.
-
-[Amazon Connect Pricing](https://aws.amazon.com/connect/pricing/) for chat is : $0.004 per message
-[Amazon Translate Pricing](https://aws.amazon.com/translate/pricing/) : $15 per million characters
-[Amazon API Gateway](https://aws.amazon.com/api-gateway/pricing/) : $1 per per million requests
-[AWS Lambda](https://aws.amazon.com/lambda/pricing/) : $0.20 per million requests
-[AWS Amplify ](https://aws.amazon.com/amplify/pricing/?nc=sn&loc=3) : $0.01 per build minute and $0.23 per GB stored per month and $0.15 per GB served 
-
-<ins>Therefore a very approximate cost for 100 users for a month</ins>, handling 59 chats per day each for 21 days (a month) we have:
-
-| Service             | Costs (Month) |
-|---------------------|---------------|
-| Amacon Connect Chat |  $8,400.00    |
-| Amazon Translate    |  $425.25      |
-| Amazon Comprehend   |  $63.00       |
-| Amazon API Gateway  |  $2.10        |
-| AWS Lambda          |  $0.22        |
-| Amplify Build       |  $0.08        |
-| Amplify Hosting     |  $0.01        |
-| Amplify Served      |  $0.37        |
-|                     |               |
-| Total (124k chats)  |  $8,891.03    |
-
- Assumptions. 
- 
- - 30% of messages are translated
- - 15% of the chats require language detection
- - 10 Page loads per user per day
- - 150 characters average message size for translation
- - Average messages per chat 17
-
-
-### Todo
-
-* More testing & code clean up
-* Enable language selection for the customer side
-* Enable language section for the agent side
-* Translate message prior connect to an agent
-* Store state locally to survive page refresh
-* Prevent translation attempt for same language pairs
-
-
-### Clean up
-
-Within the amplify UI navigate to your app, on the top right select `Actions` and then `Delete app`.
-
-### Contributors
-- Daniel Bloy  
-- Bob Strahan  
-- Vishal Nayak  
-- EJ Ferrell  
-- Kishore Dhamodaran
+---
+*Cloud Computing course project. Fork of the VoiceFoundry/AWS open-source Amazon Connect Chat Translate sample — all original application code credited to its authors under the included LICENSE.*

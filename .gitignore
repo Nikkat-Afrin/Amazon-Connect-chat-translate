@@ -1,0 +1,27 @@
+# Dependencies / build
+node_modules/
+build/
+dist/
+.pnp/
+coverage/
+
+# Amplify local/generated artifacts (do not commit secrets or env state)
+amplify/\#current-cloud-backend
+amplify/.config/local-*
+amplify/backend/amplify-meta.json
+amplify/backend/awscloudformation
+amplify/team-provider-info.json
+aws-exports.js
+amplifyconfiguration.json
+
+# Env / secrets — keep .env.example, never commit real instance values
+.env.local
+.env.*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-error.log*
+.vscode/
+.idea/
