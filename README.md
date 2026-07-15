@@ -1,13 +1,13 @@
 # Real-Time Multilingual Chat Translation on AWS Connect ☁️🌐
 
-**A serverless web app that adds real-time, two-way language translation to Amazon Connect chat — a customer chats in their own language while the agent works in English, with automatic language detection.**
+**A serverless web app that adds real-time, two-way language translation to Amazon Connect chat - a customer chats in their own language while the agent works in English, with automatic language detection.**
 
 ![AWS](https://img.shields.io/badge/AWS-Connect%20%7C%20Translate%20%7C%20Comprehend%20%7C%20Lambda%20%7C%20Amplify-orange) ![Frontend](https://img.shields.io/badge/Frontend-React-blue) ![Type](https://img.shields.io/badge/Type-Fork%20%E2%80%94%20Deployed%20%26%20Configured-yellow)
 
 ---
 
 > ### ⚠️ Attribution (please read first)
-> **This is a fork of an open-source AWS sample**, originally created by **VoiceFoundry / AWS** (contributors: Daniel Bloy, Bob Strahan, Vishal Nayak, EJ Ferrell, Kishore Dhamodaran — see [`UPSTREAM_README.md`](UPSTREAM_README.md) and [`LICENSE`](LICENSE)). I did **not** write the original application code. My contribution was to **deploy, configure, test, and document** the solution as a Cloud Computing course project, and to write the architecture/operations notes below. The original repo: *Amazon Connect Chat Translate (VoiceFoundry)*. This fork is published for portfolio/learning purposes with full credit to the original authors.
+> **This is a fork of an open-source AWS sample**, originally created by **VoiceFoundry / AWS** (contributors: Daniel Bloy, Bob Strahan, Vishal Nayak, EJ Ferrell, Kishore Dhamodaran - see [`UPSTREAM_README.md`](UPSTREAM_README.md) and [`LICENSE`](LICENSE)). I did **not** write the original application code. My contribution was to **deploy, configure, test, and document** the solution as a Cloud Computing course project, and to write the architecture/operations notes below. The original repo: *Amazon Connect Chat Translate (VoiceFoundry)*. This fork is published for portfolio/learning purposes with full credit to the original authors.
 
 ---
 
@@ -49,7 +49,7 @@ All services fall under the **AWS Free Tier** for light use. Indicative per-mess
 
 ## ▶️ Deploy it yourself (summary)
 1. Fork the repo and connect it in the **AWS Amplify** console (Amplify Hosting → GitHub).
-2. Add environment variables: `REACT_APP_CONNECT_REGION`, `REACT_APP_CONNECT_INSTANCE_URL` (and set `src/.env`'s `REACT_APP_CCP_URL` to *your* Connect instance — the committed value is a redacted placeholder).
+2. Add environment variables: `REACT_APP_CONNECT_REGION`, `REACT_APP_CONNECT_INSTANCE_URL` (and set `src/.env`'s `REACT_APP_CCP_URL` to *your* Connect instance - the committed value is a redacted placeholder).
 3. After deploy (~10 min), add the Amplify URL to Amazon Connect **Approved Origins**.
 4. Start a test chat and confirm translation + language detection. Full steps in [`UPSTREAM_README.md`](UPSTREAM_README.md).
 
@@ -62,4 +62,4 @@ All services fall under the **AWS Free Tier** for light use. Indicative per-mess
 `AWS Amplify` · `Amazon Connect` · `Amazon Translate` · `Amazon Comprehend` · `AWS Lambda` · `API Gateway` · `React` · `JavaScript` · `CloudFormation (Amplify-generated)`
 
 ---
-*Cloud Computing course project. Fork of the VoiceFoundry/AWS open-source Amazon Connect Chat Translate sample — all original application code credited to its authors under the included LICENSE.*
+*Cloud Computing course project. Fork of the VoiceFoundry/AWS open-source Amazon Connect Chat Translate sample - all original application code credited to its authors under the included LICENSE.*
